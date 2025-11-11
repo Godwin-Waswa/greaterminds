@@ -1,365 +1,536 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="Senior Data Analyst & Consultant — Power BI, Python, SQL, data strategy, tutoring, and freelance execution." />
-  <meta name="theme-color" content="#0d9488" />
-  <title>GreaterMinds — Data Analysis & Consultancy</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Analysis Professional Portfolio</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Custom font import and application */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7fafc; /* Light gray background */
+        }
+        /* Style the Lucide icons */
+        .icon {
+            stroke-width: 1.5;
+            color: #0d9488; /* Teal color for accents */
+        }
+        .section-padding {
+            padding: 4rem 1rem;
+        }
+        @media (min-width: 640px) {
+            .section-padding {
+                padding: 6rem 4rem;
+            }
+        }
+        /* Styling for the detail panels - starts hidden */
+        .service-detail-panel {
+            display: none;
+            /* Added transition for smoother appearance */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+        }
+        /* Style for active panel */
+        .service-detail-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* Styling for the chevron icon rotation */
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+        .rotate-90 {
+            transform: rotate(90deg);
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'primary-blue': '#1e3a8a', /* Deep Indigo */
+                        'accent-teal': '#0d9488', /* Teal */
+                        'light-bg': '#f7fafc',
+                    }
+                }
+            }
+        }
 
-  <!-- Preconnects & Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+        // JavaScript function to toggle the visibility of a service detail panel
+        function toggleServiceDetail(buttonElement, serviceId) {
+            const panels = document.querySelectorAll('.service-detail-panel');
+            const targetPanel = document.getElementById(serviceId);
+            const chevronIcon = buttonElement.querySelector('.chevron-icon');
 
-  <!-- Tailwind CDN (production suggestion: replace with compiled Tailwind for best performance) -->
-  <script src="https://cdn.tailwindcss.com" defer></script>
+            // Find all chevron icons
+            document.querySelectorAll('.chevron-icon').forEach(icon => {
+                if (icon !== chevronIcon) {
+                    icon.classList.remove('rotate-90');
+                }
+            });
 
-  <!-- Custom stylesheet -->
-  <link rel="stylesheet" href="style.css" />
+            // Close all other panels and remove the 'active' class
+            panels.forEach(panel => {
+                if (panel.id !== serviceId) {
+                    panel.classList.remove('active');
+                    panel.style.display = 'none'; // Ensure display is set to none for proper layout
+                }
+            });
 
-  <!-- Icons (Lucide) deferred to script.js initialization -->
+            // Toggle the target panel
+            if (targetPanel) {
+                const isCurrentlyOpen = targetPanel.classList.contains('active');
+
+                // Toggle the 'active' class which controls visibility and transition
+                if (isCurrentlyOpen) {
+                    targetPanel.classList.remove('active');
+                    targetPanel.style.display = 'none';
+                    chevronIcon.classList.remove('rotate-90');
+                } else {
+                    targetPanel.style.display = 'block';
+                    // Force a re-layout to ensure the transition fires
+                    void targetPanel.offsetWidth; 
+                    targetPanel.classList.add('active');
+                    chevronIcon.classList.add('rotate-90');
+                    
+                    // Scroll to the detail section when opened
+                    targetPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+        
+        // Initialize Lucide icons on window load
+        window.onload = function() {
+            lucide.createIcons();
+        }
+    </script>
 </head>
-<body class="bg-light-bg text-gray-800 font-sans">
+<body>
 
-  <a class="sr-only focus:not-sr-only" href="#main">Skip to content</a>
-
-  <!-- Header / Nav -->
-  <header class="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b">
-    <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8" aria-label="Primary navigation">
-      <div class="flex items-center justify-between h-16">
-        <a href="#hero" class="inline-flex items-center gap-3 text-2xl font-extrabold text-primary-blue">
-          <svg width="32" height="32" viewBox="0 0 24 24" class="text-accent-teal" aria-hidden="true" focusable="false">
-            <circle cx="12" cy="12" r="10" fill="#0d9488" />
-            <path d="M8 12h8" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          <span class="sr-only sm:not-sr-only">GreaterMinds</span>
-        </a>
-
-        <div class="hidden md:flex md:items-center md:space-x-6">
-          <a class="nav-link" href="#services">Services</a>
-          <a class="nav-link" href="#academics">Academics</a>
-          <a class="nav-link hidden sm:inline" href="#skills">Skills</a>
-          <a class="nav-link hidden lg:inline" href="#portfolio">Portfolio</a>
-          <a class="nav-link" href="#contact">Contact</a>
+    <!-- Sticky Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="#hero" class="text-2xl font-bold text-primary-blue hover:text-accent-teal transition duration-300">
+                    GreaterMinds
+                </a>
+                <div class="flex space-x-2 sm:space-x-4 text-sm sm:text-base">
+                    <a href="#services" class="text-gray-600 hover:text-primary-blue font-medium transition duration-300">Services</a>
+                    <a href="#academics" class="text-gray-600 hover:text-primary-blue font-medium transition duration-300">Academics</a>
+                    <a href="#skills" class="text-gray-600 hover:text-primary-blue font-medium transition duration-300 hidden sm:block">Skills</a>
+                    <a href="#portfolio" class="text-gray-600 hover:text-primary-blue font-medium transition duration-300 hidden md:block">Portfolio</a>
+                    <a href="#contact" class="text-gray-600 hover:text-primary-blue font-medium transition duration-300">Contact</a>
+                </div>
+            </div>
         </div>
-
-        <!-- Mobile menu button -->
-        <div class="md:hidden">
-          <button id="mobile-toggle" class="p-2 rounded-md text-primary-blue hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-accent-teal" aria-expanded="false" aria-controls="mobile-menu" aria-label="Open menu">
-            <svg id="hamburger" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Mobile menu -->
-      <div id="mobile-menu" class="md:hidden hidden mt-2" role="menu" aria-label="Mobile menu">
-        <div class="px-2 pb-3 space-y-1">
-          <a class="block px-3 py-2 rounded-md nav-link" href="#services">Services</a>
-          <a class="block px-3 py-2 rounded-md nav-link" href="#academics">Academics</a>
-          <a class="block px-3 py-2 rounded-md nav-link" href="#skills">Skills</a>
-          <a class="block px-3 py-2 rounded-md nav-link" href="#portfolio">Portfolio</a>
-          <a class="block px-3 py-2 rounded-md nav-link" href="#contact">Contact</a>
-        </div>
-      </div>
     </nav>
-  </header>
 
-  <main id="main" class="overflow-hidden">
-
-    <!-- HERO -->
+    <!-- 1. Hero Section -->
     <section id="hero" class="section-padding bg-primary-blue text-white">
-      <div class="max-w-4xl mx-auto text-center px-4">
-        <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold leading-tight mb-4">
-          Transforming Data into <span class="text-accent-teal">Actionable Insight</span>
-        </h1>
-        <p class="text-md sm:text-lg md:text-xl opacity-90 mb-8">Senior Data Analyst & Consultant — freelance projects, tutoring, and strategic data advisory.</p>
-        <div class="flex justify-center gap-4">
-          <a href="#services" class="btn-primary">Explore Services</a>
-          <a href="#contact" class="btn-ghost">Get a Quote</a>
+        <div class="max-w-5xl mx-auto text-center">
+            <h1 class="text-4xl sm:text-6xl font-extrabold mb-4 leading-tight">
+                Transforming Data into <span class="text-accent-teal">Actionable Insight</span>
+            </h1>
+            <p class="text-xl sm:text-2xl mb-8 opacity-90">
+                Senior Data Analyst & Consultant offering freelance expertise, specialized tutoring, and strategic business analysis.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <a href="#services" class="px-8 py-3 bg-accent-teal text-white font-semibold rounded-lg shadow-xl hover:bg-teal-700 transition duration-300 transform hover:scale-105">
+                    Explore Services
+                </a>
+                <a href="#contact" class="px-8 py-3 bg-white text-primary-blue font-semibold rounded-lg shadow-xl hover:bg-gray-100 transition duration-300 transform hover:scale-105 border-2 border-transparent hover:border-accent-teal">
+                    Get a Quote
+                </a>
+            </div>
         </div>
-      </div>
     </section>
 
-    <!-- SERVICES -->
-    <section id="services" class="section-padding" aria-labelledby="services-heading">
-      <div class="max-w-7xl mx-auto px-4">
-        <h2 id="services-heading" class="text-2xl sm:text-3xl font-bold text-center text-primary-blue mb-8">My Core Offerings</h2>
+    <!-- 2. Services Section -->
+    <section id="services" class="section-padding">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-primary-blue mb-12">
+                My Core Offerings
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- Card template: the button toggles a detail panel -->
-          <article class="service-card" aria-labelledby="srvc-analysis">
-            <div class="card-top">
-              <i data-lucide="bar-chart-2" class="icon" aria-hidden="true"></i>
-              <h3 id="srvc-analysis" class="text-xl font-semibold text-primary-blue mb-2">Data Analysis & Reporting</h3>
-              <p class="text-gray-600 text-sm">Statistical analysis, forecasting, and automated dashboards (Power BI, Tableau) to drive decisions.</p>
-            </div>
-            <div class="card-actions mt-4">
-              <button class="learn-btn" data-target="detail-analysis" aria-expanded="false">Learn More <svg class="chev w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-            </div>
-          </article>
+                <!-- Service Card 1: Data Analysis & Reporting -->
+                <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-accent-teal transform hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="bar-chart-2" class="icon w-10 h-10 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-primary-blue mb-3">Data Analysis & Reporting</h3>
+                    <p class="text-gray-600 text-sm">
+                        In-depth statistical analysis, predictive modeling, and creation of automated, insightful dashboards (Power BI, Tableau) to drive data-led decisions.
+                    </p>
+                    <button onclick="toggleServiceDetail(this, 'detail-analysis')" class="mt-4 inline-block text-accent-teal hover:text-teal-600 text-sm font-medium flex items-center">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4 ml-1 chevron-icon"></i>
+                    </button>
+                </div>
 
-          <article class="service-card" aria-labelledby="srvc-tutoring">
-            <div class="card-top">
-              <i data-lucide="graduation-cap" class="icon" aria-hidden="true"></i>
-              <h3 id="srvc-tutoring" class="text-xl font-semibold text-primary-blue mb-2">Specialized Tutoring</h3>
-              <p class="text-gray-600 text-sm">One-on-one Python, SQL, R, Excel coaching for students and professionals.</p>
-            </div>
-            <div class="card-actions mt-4">
-              <button class="learn-btn" data-target="detail-tutoring" aria-expanded="false">Learn More <svg class="chev w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-            </div>
-          </article>
+                <!-- Service Card 2: Specialized Tutoring -->
+                <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-primary-blue transform hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="graduation-cap" class="icon w-10 h-10 mb-4" style="color: #1e3a8a;"></i>
+                    <h3 class="text-xl font-semibold text-primary-blue mb-3">Specialized Tutoring</h3>
+                    <p class="text-gray-600 text-sm">
+                        One-on-one sessions for Python (Pandas/NumPy), SQL, R, and advanced Excel. Perfect for students and professionals looking to level up their data skills.
+                    </p>
+                    <button onclick="toggleServiceDetail(this, 'detail-tutoring')" class="mt-4 inline-block text-accent-teal hover:text-teal-600 text-sm font-medium flex items-center">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4 ml-1 chevron-icon"></i>
+                    </button>
+                </div>
 
-          <article class="service-card" aria-labelledby="srvc-consult">
-            <div class="card-top">
-              <i data-lucide="briefcase" class="icon" aria-hidden="true"></i>
-              <h3 id="srvc-consult" class="text-xl font-semibold text-primary-blue mb-2">Data Strategy Consultancy</h3>
-              <p class="text-gray-600 text-sm">Data governance, KPIs, pipelines, and analytics team design for scale.</p>
-            </div>
-            <div class="card-actions mt-4">
-              <button class="learn-btn" data-target="detail-consultancy" aria-expanded="false">Learn More <svg class="chev w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-            </div>
-          </article>
+                <!-- Service Card 3: Business Consultancy -->
+                <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-accent-teal transform hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="briefcase" class="icon w-10 h-10 mb-4"></i>
+                    <h3 class="text-xl font-semibold text-primary-blue mb-3">Data Strategy Consultancy</h3>
+                    <p class="text-gray-600 text-sm">
+                        Guidance on implementing data governance, establishing KPIs, building a data pipeline, and structuring analytics teams for maximum efficiency.
+                    </p>
+                    <button onclick="toggleServiceDetail(this, 'detail-consultancy')" class="mt-4 inline-block text-accent-teal hover:text-teal-600 text-sm font-medium flex items-center">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4 ml-1 chevron-icon"></i>
+                    </button>
+                </div>
 
-          <article class="service-card" aria-labelledby="srvc-freelance">
-            <div class="card-top">
-              <i data-lucide="code" class="icon" aria-hidden="true"></i>
-              <h3 id="srvc-freelance" class="text-xl font-semibold text-primary-blue mb-2">Freelance Project Execution</h3>
-              <p class="text-gray-600 text-sm">ETL, data cleaning, automation, and quick reporting for urgent needs.</p>
+                <!-- Service Card 4: Freelance Project Execution -->
+                <div class="bg-white p-6 rounded-xl shadow-2xl border-t-4 border-primary-blue transform hover:-translate-y-1 transition duration-300">
+                    <i data-lucide="code" class="icon w-10 h-10 mb-4" style="color: #1e3a8a;"></i>
+                    <h3 class="text-xl font-semibold text-primary-blue mb-3">Freelance Project Execution</h3>
+                    <p class="text-gray-600 text-sm">
+                        Flexible support for short-term projects: data cleaning, migration, custom scripting, and automated solution development tailored to your unique needs.
+                    </p>
+                    <button onclick="toggleServiceDetail(this, 'detail-freelance')" class="mt-4 inline-block text-accent-teal hover:text-teal-600 text-sm font-medium flex items-center">
+                        Learn More <i data-lucide="chevron-right" class="w-4 h-4 ml-1 chevron-icon"></i>
+                    </button>
+                </div>
             </div>
-            <div class="card-actions mt-4">
-              <button class="learn-btn" data-target="detail-freelance" aria-expanded="false">Learn More <svg class="chev w-4 h-4 ml-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg></button>
-            </div>
-          </article>
         </div>
-      </div>
+    </section>
 
-      <!-- Detail panels -->
-      <div class="max-w-7xl mx-auto px-4 mt-8 space-y-6" id="service-details" aria-live="polite">
-        <section id="detail-analysis" class="detail-panel" hidden>
-          <div class="panel-inner bg-white p-6 rounded-lg shadow">
-            <h3 class="text-2xl font-bold text-accent-teal mb-3">Data Analysis & Reporting</h3>
-            <p class="text-gray-700 mb-4">Full analytical lifecycle — hypothesis, modeling, and automated delivery.</p>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Advanced Statistics</strong>
-                <p class="text-sm text-gray-600">Regression, ARIMA forecasting and inferential stats to validate strategies.</p>
-              </div>
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Automated Dashboards</strong>
-                <p class="text-sm text-gray-600">Power BI & Tableau solutions with scheduled refresh and alerts.</p>
-              </div>
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Custom Reporting</strong>
-                <p class="text-sm text-gray-600">SQL/SAP-integrated scheduled reports tailored to operations and finance.</p>
-              </div>
+    <!-- 2A. Detail Pages (Hidden by default) -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        
+        <!-- Detail Panel 1: Data Analysis & Reporting -->
+        <div id="detail-analysis" class="service-detail-panel bg-white p-8 rounded-xl shadow-2xl my-8 border-l-4 border-accent-teal">
+            <h3 class="text-3xl font-bold text-accent-teal mb-4">Data Analysis & Reporting</h3>
+            <p class="text-lg text-gray-700 mb-6">
+                I help organizations move beyond raw data to <b>meaningful, predictive insights </b> . This service focuses on the entire analytical lifecycle, from hypothesis generation to final, automated delivery.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <strong class="text-primary-blue block mb-1">Advanced Statistics:</strong>
+                    <p class="text-sm text-gray-600">Regression analysis, time-series forecasting (ARIMA), and inferential statistics to prove or disprove business hypotheses.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <strong class="text-primary-blue block mb-1">Automated Dashboards:</strong>
+                    <p class="text-sm text-gray-600">Development of interactive, real-time dashboards using <b>Power BI</b> or <b>Tableau</b> that simplify complex performance metrics for executive review.</p>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg">
+                    <strong class="text-primary-blue block mb-1">Custom Reporting:</strong>
+                    <p class="text-sm text-gray-600">Creation of scheduled, bespoke reports (e.g., revenue leakage, staff accountability) directly integrated with SQL or SAP-ERP systems.</p>
+                </div>
             </div>
-            <a class="mt-4 inline-block btn-primary" href="#contact">Request a Custom Report →</a>
-          </div>
-        </section>
+            <a href="#contact" class="mt-6 inline-block px-6 py-2 bg-primary-blue text-white font-semibold rounded-lg hover:bg-indigo-900 transition duration-300">Request a Custom Report &rarr;</a>
+        </div>
 
-        <section id="detail-tutoring" class="detail-panel" hidden>
-          <div class="panel-inner bg-white p-6 rounded-lg shadow">
-            <h3 class="text-2xl font-bold text-primary-blue mb-3">Specialized Tutoring</h3>
-            <p class="text-gray-700 mb-4">Tailored, hands-on instruction focused on practical skills.</p>
-            <ul class="list-disc ml-5 space-y-2 text-gray-700">
-              <li><strong>Python for Data:</strong> Pandas, NumPy, Matplotlib.</li>
-              <li><strong>Database Mastery:</strong> Complex, optimized SQL queries.</li>
-              <li><strong>BI Tools:</strong> Power BI & Tableau report building.</li>
-              <li><strong>Statistics & Excel:</strong> SPSS, advanced Excel techniques.</li>
+        <!-- Detail Panel 2: Specialized Tutoring -->
+        <div id="detail-tutoring" class="service-detail-panel bg-white p-8 rounded-xl shadow-2xl my-8 border-l-4 border-primary-blue">
+            <h3 class="text-3xl font-bold text-primary-blue mb-4">Specialized Tutoring</h3>
+            <p class="text-lg text-gray-700 mb-6">
+                Whether you're a student struggling with coursework or a professional aiming for a career transition, I provide tailored, practical instruction that focuses on real-world application.
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 pl-4">
+                <li><strong class="font-semibold">Python for Data:</strong> Deep dives into Pandas, NumPy, and Matplotlib for efficient data manipulation and visualization.</li>
+                <li><strong class="font-semibold">Database Mastery:</strong> Practical sessions on writing complex, optimized SQL queries and understanding database structures.</li>
+                <li><strong class="font-semibold">BI Tools:</strong> Hands-on training in building and maintaining reports in Power BI and Tableau.</li>
+                <li><strong class="font-semibold">Statistical Software:</strong> Guidance on using SPSS and advanced features of Microsoft Excel for statistical analysis.</li>
             </ul>
-            <a class="mt-4 inline-block btn-accent" href="#contact">Book Your First Session →</a>
-          </div>
-        </section>
+            <a href="#contact" class="mt-6 inline-block px-6 py-2 bg-accent-teal text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-300">Book Your First Session &rarr;</a>
+        </div>
 
-        <section id="detail-consultancy" class="detail-panel" hidden>
-          <div class="panel-inner bg-white p-6 rounded-lg shadow">
-            <h3 class="text-2xl font-bold text-accent-teal mb-3">Data Strategy Consultancy</h3>
-            <p class="text-gray-700 mb-4">Roadmaps, governance, KPIs, and the right tools for growth.</p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Data Governance</strong>
-                <p class="text-sm text-gray-600">Policies and processes for accuracy and compliance.</p>
-              </div>
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">KPI Definition</strong>
-                <p class="text-sm text-gray-600">Clear, measurable indicators aligned to objectives.</p>
-              </div>
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Team Structuring</strong>
-                <p class="text-sm text-gray-600">Hiring and training advice for analytics teams.</p>
-              </div>
-              <div class="p-4 bg-gray-50 rounded">
-                <strong class="text-primary-blue block mb-1">Tech Roadmap</strong>
-                <p class="text-sm text-gray-600">Cloud & open-source recommendations for your stack.</p>
-              </div>
+        <!-- Detail Panel 3: Data Strategy Consultancy -->
+        <div id="detail-consultancy" class="service-detail-panel bg-white p-8 rounded-xl shadow-2xl my-8 border-l-4 border-accent-teal">
+            <h3 class="text-3xl font-bold text-accent-teal mb-4">Data Strategy Consultancy</h3>
+            <p class="text-lg text-gray-700 mb-6">
+                I assist small to medium-sized businesses in establishing a robust data culture, ensuring they collect the right data and use it efficiently to achieve strategic objectives.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-4 bg-gray-50 rounded-lg flex items-start">
+                    <i data-lucide="sitemap" class="w-6 h-6 text-primary-blue mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-primary-blue block mb-1">Data Governance & Quality:</strong>
+                        <p class="text-sm text-gray-600">Implementing policies and processes to ensure data accuracy, consistency, and compliance.</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg flex items-start">
+                    <i data-lucide="target" class="w-6 h-6 text-primary-blue mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-primary-blue block mb-1">KPI Definition:</strong>
+                        <p class="text-sm text-gray-600">Defining clear, measurable Key Performance Indicators (KPIs) that align data efforts with business goals.</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg flex items-start">
+                    <i data-lucide="briefcase-business" class="w-6 h-6 text-primary-blue mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-primary-blue block mb-1">Analytics Team Structuring:</strong>
+                        <p class="text-sm text-gray-600">Advice on hiring, training, and structuring your in-house analytics team for scale.</p>
+                    </div>
+                </div>
+                <div class="p-4 bg-gray-50 rounded-lg flex items-start">
+                    <i data-lucide="route" class="w-6 h-6 text-primary-blue mr-3 flex-shrink-0"></i>
+                    <div>
+                        <strong class="text-primary-blue block mb-1">Technology Roadmap:</strong>
+                        <p class="text-sm text-gray-600">Recommendations for the right blend of cloud services and open-source tools for your data stack.</p>
+                    </div>
+                </div>
             </div>
-            <a class="mt-4 inline-block btn-primary" href="#contact">Schedule Strategy Call →</a>
-          </div>
-        </section>
-
-        <section id="detail-freelance" class="detail-panel" hidden>
-          <div class="panel-inner bg-white p-6 rounded-lg shadow">
-            <h3 class="text-2xl font-bold text-primary-blue mb-3">Freelance Project Execution</h3>
-            <p class="text-gray-700 mb-4">Hands-on help for short engagements and technical needs.</p>
-            <ul class="list-disc ml-5 space-y-2 text-gray-700">
-              <li><strong>Data Cleaning</strong> — Pandas workflows for messy datasets.</li>
-              <li><strong>ETL & Scripts</strong> — Automations for movement and transformation.</li>
-              <li><strong>Ad-hoc Reporting</strong> — Fast insights for urgent decisions.</li>
-              <li><strong>Small-scale Automation</strong> — Scripts to save manual time.</li>
+            <a href="#contact" class="mt-6 inline-block px-6 py-2 bg-primary-blue text-white font-semibold rounded-lg hover:bg-indigo-900 transition duration-300">Schedule Strategy Call &rarr;</a>
+        </div>
+        
+        <!-- Detail Panel 4: Freelance Project Execution -->
+        <div id="detail-freelance" class="service-detail-panel bg-white p-8 rounded-xl shadow-2xl my-8 border-l-4 border-primary-blue">
+            <h3 class="text-3xl font-bold text-primary-blue mb-4">Freelance Project Execution</h3>
+            <p class="text-lg text-gray-700 mb-6">
+                Perfect for quick wins and immediate technical needs, this service offers flexible, hands-on execution for specific tasks that require dedicated data expertise.
+            </p>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 pl-4">
+                <li><strong class="font-semibold">Data Cleaning & Transformation:</strong> Cleaning messy, inconsistent, or high-volume datasets using Python (Pandas) to ensure reliability.</li>
+                <li><strong class="font-semibold">ETL/Script Development:</strong> Building custom scripts to extract, transform, and load data between disparate systems (e.g., from Excel files to a SQL database).</li>
+                <li><strong class="font-semibold">Quick Reporting:</strong> Generating immediate, ad-hoc reports for urgent business questions.</li>
+                <li><strong class="font-semibold">Automated Solutions:</strong> Developing small-scale automation tools to handle repetitive data tasks and free up staff time.</li>
             </ul>
-            <a class="mt-4 inline-block btn-accent" href="#contact">Submit Project Brief →</a>
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <!-- ACADEMICS -->
-    <section id="academics" class="section-padding bg-gray-50" aria-labelledby="academics-heading">
-      <div class="max-w-7xl mx-auto px-4">
-        <h2 id="academics-heading" class="text-2xl sm:text-3xl font-bold text-center text-primary-blue mb-8">Academics & Professional Milestones</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div class="bg-white p-6 rounded-lg shadow">
-            <h3 class="text-xl font-bold text-accent-teal mb-4">University & Advanced Study</h3>
-            <div class="space-y-6 border-l-4 border-primary-blue pl-4">
-              <div>
-                <p class="font-semibold">Bachelor of Science in Mathematics</p>
-                <p class="text-primary-blue">The Technical University of Kenya</p>
-                <p class="text-sm text-gray-600">Second Class Honours (Lower Division) — Sep 2015 to Dec 2019</p>
-              </div>
-              <div>
-                <p class="font-semibold">Certificate: Data Analysis & Visualization</p>
-                <p class="text-primary-blue">African Digital Media Institute (ADMI)</p>
-                <p class="text-sm text-gray-600">Aug 2025 to Oct 2025 — Power BI, SQL, Tableau, Python</p>
-              </div>
-              <div>
-                <p class="font-semibold">KCSE</p>
-                <p class="text-primary-blue">St Luke's Boys' High School, Kimilili</p>
-                <p class="text-sm text-gray-600">Mean Grade: B (Plain) — Feb 2010 to Nov 2013</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="bg-white p-6 rounded-lg shadow">
-            <h3 class="text-xl font-bold text-accent-teal mb-4">Professional & Training Highlights</h3>
-            <ul class="space-y-4 text-gray-700">
-              <li><strong>Tax Foundation (KESRA)</strong> — Grade A (90%), Oct 2024</li>
-              <li><strong>Software Dev Program</strong> — Dart, Web, Python, DBs, 2022</li>
-              <li><strong>Tax/Security Induction</strong> — Revenue Service Assistants, 2023</li>
-              <li><strong>Ajira Digital</strong> — Data Management skills (Oct–Dec 2021)</li>
-              <li><strong>Co-founded Mathematics Club</strong> — Kasarani Academy</li>
-            </ul>
-          </div>
+            <a href="#contact" class="mt-6 inline-block px-6 py-2 bg-accent-teal text-white font-semibold rounded-lg hover:bg-teal-700 transition duration-300">Submit Project Brief &rarr;</a>
         </div>
-      </div>
-    </section>
-
-    <!-- SKILLS -->
-    <section id="skills" class="section-padding" aria-labelledby="skills-heading">
-      <div class="max-w-7xl mx-auto px-4">
-        <h2 id="skills-heading" class="text-2xl sm:text-3xl font-bold text-center text-primary-blue mb-8">Technical Expertise</h2>
-        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-          <div class="skill-card"><i data-lucide="database" class="icon"></i><p>SQL (Advanced)</p></div>
-          <div class="skill-card"><i data-lucide="layers" class="icon"></i><p>Python (Pandas/ML)</p></div>
-          <div class="skill-card"><i data-lucide="eye" class="icon"></i><p>Power BI / Tableau</p></div>
-          <div class="skill-card"><i data-lucide="hard-hat" class="icon"></i><p>ETL & Data Modeling</p></div>
-          <div class="skill-card"><i data-lucide="cloud" class="icon"></i><p>Statistical Analysis</p></div>
-          <div class="skill-card"><i data-lucide="git-branch" class="icon"></i><p>SPSS / SAP-ERP</p></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- PORTFOLIO -->
-    <section id="portfolio" class="section-padding bg-gray-50" aria-labelledby="portfolio-heading">
-      <div class="max-w-7xl mx-auto px-4">
-        <h2 id="portfolio-heading" class="text-2xl sm:text-3xl font-bold text-center text-primary-blue mb-8">Recent Projects & Case Studies</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <article class="project-card">
-            <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=E-commerce+Dashboard" alt="E-commerce sales forecasting dashboard" class="object-cover w-full h-48 rounded-t-lg">
-            <div class="p-4">
-              <h3 class="font-semibold text-primary-blue">E-commerce Sales Forecasting</h3>
-              <p class="text-gray-600 text-sm">ARIMA model achieving high accuracy for quarterly sales forecasting and inventory optimization.</p>
-              <div class="mt-3 flex gap-2">
-                <span class="tag">Consultancy</span>
-                <span class="tag muted">Python</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="project-card">
-            <img src="https://placehold.co/600x400/0d9488/ffffff?text=Educational+Data+Model" alt="Student performance tracker visuals" class="object-cover w-full h-48 rounded-t-lg">
-            <div class="p-4">
-              <h3 class="font-semibold text-primary-blue">Student Performance Tracker</h3>
-              <p class="text-gray-600 text-sm">Real-time SQL pipeline + Tableau to identify at-risk students immediately.</p>
-              <div class="mt-3 flex gap-2">
-                <span class="tag">Freelance</span>
-                <span class="tag muted">SQL</span>
-              </div>
-            </div>
-          </article>
-
-          <article class="project-card">
-            <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=Healthcare+Analysis" alt="Clinical trial data cleaning result" class="object-cover w-full h-48 rounded-t-lg">
-            <div class="p-4">
-              <h3 class="font-semibold text-primary-blue">Clinical Trial Data Cleaning</h3>
-              <p class="text-gray-600 text-sm">Managed and cleaned large healthcare datasets, reducing input errors by 40% via Pandas pipelines.</p>
-              <div class="mt-3 flex gap-2">
-                <span class="tag">Data Analysis</span>
-                <span class="tag muted">Pandas</span>
-              </div>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section id="contact" class="section-padding bg-primary-blue text-white" aria-labelledby="contact-heading">
-      <div class="max-w-4xl mx-auto px-4 text-center">
-        <h2 id="contact-heading" class="text-2xl sm:text-3xl font-bold mb-2">Ready to Start Your Data Journey?</h2>
-        <p class="mb-6 opacity-90">Send a message to discuss projects, tutoring, or data strategy. Typical response within 24 hours.</p>
-
-        <div class="flex flex-col sm:flex-row justify-center gap-6 mb-6">
-          <a class="contact-pill" href="mailto:waswagodwin19@gmail.com"><i data-lucide="mail" class="w-5 h-5 mr-2 text-accent-teal"></i>waswagodwin19@gmail.com</a>
-          <a class="contact-pill" href="tel:+254792777948"><i data-lucide="phone" class="w-5 h-5 mr-2 text-accent-teal"></i>+254 792 777 948</a>
-        </div>
-
-        <!-- Form (replace action with your backend or form service) -->
-        <form id="contact-form" class="bg-white text-gray-800 p-6 rounded-lg shadow max-w-2xl mx-auto" method="POST" action="https://formspree.io/f/your-form-id">
-          <label class="sr-only" for="name">Name</label>
-          <input id="name" name="name" type="text" required placeholder="Your name" class="form-input mb-3" />
-
-          <label class="sr-only" for="email">Email</label>
-          <input id="email" name="email" type="email" required placeholder="your@email.com" class="form-input mb-3" />
-
-          <label class="sr-only" for="message">Message</label>
-          <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project..." class="form-input mb-3"></textarea>
-
-          <div class="flex gap-3">
-            <button type="submit" class="btn-accent w-full">Send Inquiry</button>
-            <button type="button" id="reset-btn" class="btn-ghost w-full">Reset</button>
-          </div>
-
-          <p id="form-feedback" class="sr-only mt-3" aria-live="polite"></p>
-        </form>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="bg-gray-800 text-white">
-    <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
-      <p>&copy; <span id="year"></span> GreaterMinds. All rights reserved.</p>
-      <div class="flex items-center gap-3">
-        <a class="footer-social" href="#" aria-label="LinkedIn"><i data-lucide="linkedin" class="w-5 h-5"></i></a>
-        <a class="footer-social" href="#" aria-label="GitHub"><i data-lucide="github" class="w-5 h-5"></i></a>
-        <a class="footer-social" href="#" aria-label="Twitter/X"><i data-lucide="twitter" class="w-5 h-5"></i></a>
-      </div>
     </div>
-  </footer>
+    <!-- END Detail Pages -->
 
-  <!-- Script -->
-  <script src="script.js" defer></script>
+    <!-- 3. Academics and Achievements Section -->
+    <section id="academics" class="section-padding bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-primary-blue mb-12">
+                Academics & Professional Milestones
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+
+                <!-- Education Column -->
+                <div class="p-6 bg-white rounded-xl shadow-2xl">
+                    <h3 class="text-2xl font-bold text-accent-teal mb-4 flex items-center">
+                        <i data-lucide="book-open-text" class="w-6 h-6 mr-2"></i> University & Advanced Study
+                    </h3>
+                    <div class="border-l-4 border-primary-blue pl-4 space-y-6">
+                        <!-- Degree 1 -->
+                        <div>
+                            <p class="text-lg font-semibold text-gray-900">Bachelor of Science in Mathematics</p>
+                            <p class="text-primary-blue font-medium">The Technical University of Kenya</p>
+                            <p class="text-sm text-gray-600">Second Class Honours (Lower Division)</p>
+                            <p class="text-xs text-gray-500 mt-1">September 2015 - December 2019</p>
+                        </div>
+                        <!-- Data Analysis Certificate (New) -->
+                        <div>
+                            <p class="text-lg font-semibold text-gray-900">Certificate in Data Analysis and Visualization</p>
+                            <p class="text-primary-blue font-medium">African Digital Media Institute (ADMI), Nairobi</p>
+                            <p class="text-sm text-gray-600">Advanced skills in Power BI, SQL, Tableau, and Python</p>
+                            <p class="text-xs text-gray-500 mt-1">August 2025 - October 2025</p>
+                        </div>
+                        <!-- High School -->
+                        <div>
+                            <p class="text-lg font-semibold text-gray-900">KCSE</p>
+                            <p class="text-primary-blue font-medium">St Luke's Boys' High School Kimilili</p>
+                            <p class="text-sm text-gray-600">Mean Grade: B (Plain) - 66 points</p>
+                            <p class="text-xs text-gray-500 mt-1">February 2010 - November 2013</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Training & Achievements Column -->
+                <div class="p-6 bg-white rounded-xl shadow-2xl">
+                    <h3 class="text-2xl font-bold text-accent-teal mb-4 flex items-center">
+                        <i data-lucide="award" class="w-6 h-6 mr-2"></i> Professional & Training Highlights
+                    </h3>
+                    <ul class="space-y-4 text-gray-700">
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-primary-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong class="font-semibold">Tax Foundation:</strong> Successfully completed Foundation in Tax course at KESRA, Nairobi, attaining a Grade: A (90%) (October 2024).
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-primary-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong class="font-semibold">Software Development Program:</strong> Completed a 16-week program covering Dart, Web Development, Python, Database, and Entrepreneurship Skills (Power Learn Project, 2022).
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-primary-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong class="font-semibold">Tax/Security Induction:</strong> Completed the Introduction to Tax and Security Course for Revenue Service Assistants (KESRA, Eldoret, 2023).
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-primary-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong class="font-semibold">Data Management Skills:</strong> Completed training from the Ajira Digital program (Oct - Dec 2021).
+                            </div>
+                        </li>
+                        <li class="flex items-start">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-primary-blue mr-3 mt-1 flex-shrink-0"></i>
+                            <div>
+                                <strong class="font-semibold">Co-Founder of Mathematics Club:</strong> Co-founded the club at Kasarani Academy, leading to improved student performance.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. Skills Section -->
+    <section id="skills" class="section-padding">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-primary-blue mb-12">
+                Technical Expertise
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
+                <!-- Skill 1 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="database" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">SQL (Advanced)</p>
+                </div>
+                <!-- Skill 2 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="layers" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">Python (Pandas/ML)</p>
+                </div>
+                <!-- Skill 3 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="eye" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">Power BI / Tableau</p>
+                </div>
+                <!-- Skill 4 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="hard-hat" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">ETL & Data Modeling</p>
+                </div>
+                <!-- Skill 5 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="cloud" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">Statistical Analysis</p>
+                </div>
+                <!-- Skill 6 -->
+                <div class="p-4 bg-white rounded-xl shadow-md border border-gray-200">
+                    <i data-lucide="git-branch" class="icon w-8 h-8 mx-auto mb-2"></i>
+                    <p class="font-medium text-gray-800">SPSS / SAP-ERP</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. Portfolio/Projects Section -->
+    <section id="portfolio" class="section-padding bg-gray-50">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl sm:text-4xl font-bold text-center text-primary-blue mb-12">
+                Recent Projects & Case Studies
+            </h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+
+                <!-- Project Card 1 -->
+                <div class="bg-white rounded-xl shadow-xl overflow-hidden group hover:shadow-2xl transition duration-300">
+                    <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=E-commerce+Dashboard" alt="E-commerce Analytics Project" class="w-full h-48 object-cover transition-opacity duration-300 group-hover:opacity-80" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/ffffff?text=E-commerce+Dashboard'">
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary-blue mb-2">E-commerce Sales Forecasting</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Developed a ARIMA model achieving 95% accuracy in predicting quarterly sales volume, leading to optimized inventory and logistics planning.
+                        </p>
+                        <span class="inline-block bg-accent-teal/10 text-accent-teal text-xs font-medium px-3 py-1 rounded-full">Consultancy</span>
+                        <span class="inline-block bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1 rounded-full ml-2">Python</span>
+                    </div>
+                </div>
+
+                <!-- Project Card 2 -->
+                <div class="bg-white rounded-xl shadow-xl overflow-hidden group hover:shadow-2xl transition duration-300">
+                    <img src="https://placehold.co/600x400/0d9488/ffffff?text=Educational+Data+Model" alt="Educational Data Model Project" class="w-full h-48 object-cover transition-opacity duration-300 group-hover:opacity-80" onerror="this.onerror=null; this.src='https://placehold.co/600x400/0d9488/ffffff?text=Educational+Data+Model'">
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary-blue mb-2">Student Performance Tracker</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Built a real-time SQL data pipeline and Tableau visualization for educational institution to identify at-risk students immediately.
+                        </p>
+                        <span class="inline-block bg-accent-teal/10 text-accent-teal text-xs font-medium px-3 py-1 rounded-full">Freelance</span>
+                        <span class="inline-block bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1 rounded-full ml-2">SQL</span>
+                    </div>
+                </div>
+
+                <!-- Project Card 3 -->
+                <div class="bg-white rounded-xl shadow-xl overflow-hidden group hover:shadow-2xl transition duration-300">
+                    <img src="https://placehold.co/600x400/1e3a8a/ffffff?text=Healthcare+Analysis" alt="Healthcare Analysis Project" class="w-full h-48 object-cover transition-opacity duration-300 group-hover:opacity-80" onerror="this.onerror=null; this.src='https://placehold.co/600x400/1e3a8a/ffffff?text=Healthcare+Analysis'">
+                    <div class="p-5">
+                        <h3 class="text-xl font-semibold text-primary-blue mb-2">Clinical Trial Data Cleaning</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Managed and cleaned a massive 1TB healthcare dataset, reducing data input errors by 40% using advanced Python scripting (Pandas).
+                        </p>
+                        <span class="inline-block bg-accent-teal/10 text-accent-teal text-xs font-medium px-3 py-1 rounded-full">Data Analysis</span>
+                        <span class="inline-block bg-gray-200 text-gray-700 text-xs font-medium px-3 py-1 rounded-full ml-2">Pandas</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. Contact Section -->
+    <section id="contact" class="section-padding bg-primary-blue text-white">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+                Ready to Start Your Data Journey?
+            </h2>
+            <p class="text-xl mb-8 opacity-90">
+                Send me a message to discuss your project, tutoring needs, or data strategy consultation. I respond to all inquiries within 24 hours.
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-lg font-medium">
+                <p class="flex items-center justify-center">
+                    <i data-lucide="mail" class="w-6 h-6 mr-2 text-accent-teal"></i>
+                    <a href="mailto:waswagodwin19@gmail.com" class="hover:text-accent-teal transition duration-300">waswagodwin19@gmail.com</a>
+                </p>
+                <p class="flex items-center justify-center">
+                    <i data-lucide="phone" class="w-6 h-6 mr-2 text-accent-teal"></i>
+                    <a href="tel:+254792777948" class="hover:text-accent-teal transition duration-300">+254 792 777 948 / +254 706 858 533</a>
+                </p>
+            </div>
+
+            <!-- Simple Contact Form (Mock Submission) -->
+            <form class="mt-10 bg-white p-6 rounded-xl shadow-2xl text-left">
+                <input type="text" placeholder="Your Name" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-accent-teal focus:border-accent-teal text-gray-800" required>
+                <input type="email" placeholder="Your Email" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-accent-teal focus:border-accent-teal text-gray-800" required>
+                <textarea placeholder="Tell me about your project or need..." rows="4" class="w-full p-3 mb-4 border border-gray-300 rounded-lg focus:ring-accent-teal focus:border-accent-teal text-gray-800" required></textarea>
+                <button type="submit" class="w-full p-3 bg-accent-teal text-white font-semibold rounded-lg shadow-lg hover:bg-teal-700 transition duration-300">
+                    Send Inquiry
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white p-6">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center text-sm">
+            <p>&copy; 2025 . All rights reserved.</p>
+            <div class="flex space-x-4 mt-3 sm:mt-0">
+                <!-- Mock social links -->
+                <a href="#" class="text-gray-400 hover:text-accent-teal transition duration-300">
+                    <i data-lucide="linkedin" class="w-5 h-5"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-accent-teal transition duration-300">
+                    <i data-lucide="github" class="w-5 h-5"></i>
+                </a>
+                <a href="#" class="text-gray-400 hover:text-accent-teal transition duration-300">
+                    <i data-lucide="twitter" class="w-5 h-5"></i>
+                </a>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
