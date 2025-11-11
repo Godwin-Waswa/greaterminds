@@ -531,6 +531,163 @@
             </div>
         </div>
     </footer>
+        <!-- Firebase Configuration and Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp, getDocs, doc, setDoc, where } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // IMPORTANT: Global variables are provided by the environment
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'greaterminds.top';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : null;
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        let db;
+        let auth;
+        let userId = null;
+
+        const authStatusEl = document.getElementById('auth-status');
+        const messageContainerEl = document.getElementById('message-container');
+        const messageFormEl = document.getElementById('message-form');
+        const messageInputEl = document.getElementById('message-input');
+        const sendButtonEl = document.getElementById('send-button');
+
+        // Function to initialize Firebase and Authentication
+        async function initializeFirebase() {
+            if (!firebaseConfig) {
+                authStatusEl.innerHTML = '<span class="text-red-600">ERROR: Firebase configuration is missing.</span>';
+                console.error("Firebase config missing.");
+                return;
+            }
+            
+            // Set Firestore logging to debug
+            setLogLevel('Debug');
+
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            auth = getAuth(app);
+            
+            // Set session persistence to maintain auth state across tab closing (but not browser closing)
+            await setPersistence(auth, browserSessionPersistence);
+            
+            // Handle authentication state change
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    userId = user.uid;
+                    authStatusEl.innerHTML = `Authenticated as: <strong class="text-primary-blue break-all">${userId}</strong>. <br/>Share this ID if you want to chat with others on **${appId}**.`;
+                    sendButtonEl.disabled = false;
+                    setupMessageListener();
+                } else {
+                    userId = null;
+                    authStatusEl.innerHTML = '<span class="text-red-600">Authentication failed. Please refresh.</span>';
+                    sendButtonEl.disabled = true;
+                }
+            });
+
+            // Attempt to sign in
+            try {
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    // Fallback to anonymous sign-in if no custom token is available
+                    await signInAnonymously(auth);
+                }
+            } catch (error) {
+                authStatusEl.innerHTML = `<span class="text-red-600">Authentication Error: ${error.message}</span>`;
+                console.error("Authentication failed:", error);
+            }
+        }
+
+        // Function to render messages to the UI
+        function renderMessages(messages) {
+            if (!messageContainerEl) return;
+
+            // Clear previous messages
+            messageContainerEl.innerHTML = ''; 
+
+            if (messages.length === 0) {
+                messageContainerEl.innerHTML = '<p class="text-center text-gray-400 italic">No messages yet. Send one!</p>';
+                return;
+            }
+
+            // Iterate through and create message bubbles
+            messages.forEach(msg => {
+                const messageEl = document.createElement('div');
+                const isOwn = msg.userId === userId;
+
+                messageEl.className = `message ${isOwn ? 'own' : 'other'}`;
+                
+                // Format timestamp
+                const time = msg.timestamp ? new Date(msg.timestamp.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '...';
+                
+                messageEl.innerHTML = `
+                    <div class="text-xs font-semibold ${isOwn ? 'text-white/80' : 'text-primary-blue/80'} mb-1">${isOwn ? 'You' : msg.userId}</div>
+                    <p class="text-sm">${msg.text}</p>
+                    <div class="text-right text-xs mt-1 ${isOwn ? 'text-white/70' : 'text-gray-500'}">${time}</div>
+                `;
+                messageContainerEl.appendChild(messageEl);
+            });
+            
+            // Scroll to the latest message (which is at the bottom since we use flex-direction: column-reverse)
+            messageContainerEl.scrollTop = messageContainerEl.scrollHeight;
+        }
+
+        // Setup real-time listener for messages
+        function setupMessageListener() {
+            if (!db || !userId) return;
+
+            // Use the private user-specific path: /artifacts/{appId}/users/{userId}/messages
+            const messagesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/messages`);
+            
+            // Query: order by timestamp descending
+            const q = query(messagesCollectionRef, orderBy('timestamp', 'desc'));
+
+            onSnapshot(q, (snapshot) => {
+                const messages = [];
+                snapshot.forEach(doc => {
+                    // Extract data and include the Firestore ID for potential use
+                    messages.push({ id: doc.id, ...doc.data() });
+                });
+                renderMessages(messages);
+            }, (error) => {
+                console.error("Error setting up message listener:", error);
+                messageContainerEl.innerHTML = `<p class="text-center text-red-600 italic">Error loading messages: ${error.message}</p>`;
+            });
+        }
+
+        // Handle sending a new message
+        messageFormEl.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageText = messageInputEl.value.trim();
+
+            if (!messageText || !db || !userId) return;
+
+            try {
+                // The collection path is specific to the user, making it a private chat space
+                const messagesCollectionRef = collection(db, `artifacts/${appId}/users/${userId}/messages`);
+                await addDoc(messagesCollectionRef, {
+                    userId: userId, // Sender ID
+                    text: messageText,
+                    timestamp: serverTimestamp()
+                });
+
+                messageInputEl.value = ''; // Clear the input field
+            } catch (error) {
+                console.error("Error sending message:", error);
+                // Use a visible message box instead of alert()
+                const errorMessageEl = document.createElement('div');
+                errorMessageEl.className = 'p-3 bg-red-100 text-red-700 rounded-lg mt-2 text-sm';
+                errorMessageEl.textContent = `Failed to send message: ${error.message}`;
+                messageFormEl.parentNode.insertBefore(errorMessageEl, messageFormEl.nextSibling);
+                setTimeout(() => errorMessageEl.remove(), 5000); // Remove error after 5 seconds
+            }
+        });
+        
+        // Start the application initialization
+        initializeFirebase();
+
+    </script>
 
 </body>
 </html>
